@@ -1,0 +1,95 @@
+*, ::before, ::after{
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+:root{
+  --background-dark: hsl(221,39%,11%);
+  --play-area: hsl(209, 26%, 34%);
+  --font-color-light: hsl(0,100%,100%);
+  font-family:Arial, Helvetica, sans-serif ;
+}
+body{
+  background-color: var(--background-dark);
+  color: var(--font-color-light);
+}
+.title{
+  text-align: center;
+  padding: 40px;
+  font-size: 50px;
+}
+.score{
+  justify-self: center;
+  padding: 10px 0 20px 0;
+  font-size: 25px;
+}
+.playArea{
+  background-color: var(--play-area);
+  display: grid;
+  margin: 0 auto;
+  justify-content: center;
+  grid-template: 0.2fr 1fr/repeat(2, 1fr);
+}
+.gameboard{
+  display: grid;
+  grid-template: repeat(3, 1fr)/repeat(3, 1fr);
+  width: fit-content;
+  grid-column: span 2;
+  justify-self: center;
+}
+.position{
+  border: 5px solid var(--font-color-light);
+  font-size: 100px;
+}
+.inner-position{
+  border: 2px solid var(--font-color-light);
+}
+.inner-gameboard{
+  display: grid;
+  grid-template: repeat(3, 1fr)/repeat(3, 1fr);
+  width: fit-content;
+  padding: 20px;
+  justify-self: center;
+}
+
+.position.nw{
+  font-size:50px;
+}
+.position.n{
+  font-size:50px;
+}
+.position.ne{
+  font-size:50px;
+}
+.position.e{
+  font-size:50px;
+}
+.position.se{
+  font-size:50px;
+}
+.position.s{
+  font-size:50px;
+}
+.position.sw{
+  font-size:50px;
+}
+.position.w{
+  font-size:50px;
+}
+.position.mid{
+  font-size:50px;
+}
+
+
+.nw, .n, .ne{
+  border-top: none;
+}
+.ne, .e, .se{
+  border-right: none;
+}
+.se, .s, .sw{
+  border-bottom: none;
+}
+.nw, .w, .sw{
+  border-left: none;
+}
