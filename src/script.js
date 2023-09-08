@@ -1,23 +1,20 @@
 "use strict";
+// let game = {
+//   gameboard: ["❌", "⭕"],
 
-let game = {
-  gameboard: ["❌", "⭕"],
+//   players: {
+//     p1: {
+//       name: p1Name,
+//     },
+//     p2: {
+//       name: p2Name,
+//     },
+//   },
 
-  players: {
-    p1: {
-      name: getPlayer1,
-      age: getPlayer1,
-    },
-    p2: {
-      //player info
-    },
-  },
-
-  logic: {
-    //game flow logic
-  },
-};
-
+//   logic: {
+//     //game flow logic
+//   },
+// };
 function createElements(el, content, className) {
   const element = document.createElement(el);
   element.textContent = content;
@@ -25,19 +22,11 @@ function createElements(el, content, className) {
   return element;
 }
 
-function getPlayer1(p1Name, p1Age) {
-  p1Name = game.players.p1.name;
-  p1Age = game.players.p1.age;
-}
-// function getPlayer2(p2Name, p2Age) {
-//   game.players.p2.name = p2Name;
-//   game.players.p2.age = p2Age;
-// }
-
 let startGame = document.querySelector(".startGame");
 startGame.addEventListener("click", start);
 
-function start() {
+function start(e) {
+  e.preventDefault();
   startGame.setAttribute("disabled", true);
   let body = document.querySelector("body");
   let modal = createElements("div", "", "modal");
@@ -47,47 +36,119 @@ function start() {
   let labelp1 = createElements("label", "❌:", "p1Label");
   let p1NameInput = createElements("input", "", "p1NameInput");
   p1NameInput.id = "p1Name";
-  let p1AgeInput = createElements("input", "", "p1AgeInput");
-  p1AgeInput.id = "p1Age";
 
   let labelp2 = createElements("label", "⭕:", "p2Label");
   let p2NameInput = createElements("input", "", "p2NameInput");
   p2NameInput.id = "p2Name";
-  let p2AgeInput = createElements("input", "", "p2AgeInput");
-  p1AgeInput.id = "p2Age";
 
-  let submit = createElements("button", "Submit", "modalSubmitBtn");
+  const submit = createElements("button", "Submit", "modalSubmitBtn");
 
   labelp1.setAttribute("for", "p1Name");
   p1NameInput.setAttribute("placeholder", "Player 1 Enter Name");
-  p1AgeInput.setAttribute("placeholder", "Player 1 Enter Age");
-  p1NameInput.setAttribute("type", "text");
-  p1AgeInput.setAttribute("type", "number");
 
-  labelp1.setAttribute("for", "p2Name");
+  p1NameInput.setAttribute("type", "text");
+
+  labelp2.setAttribute("for", "p2Name");
   p2NameInput.setAttribute("placeholder", "Player 2 Enter Name");
-  p2AgeInput.setAttribute("placeholder", "Player 2 Enter Age");
+
   p2NameInput.setAttribute("type", "text");
-  p2AgeInput.setAttribute("type", "number");
+
+  submit.setAttribute("type", "button");
 
   form.appendChild(labelp1);
   form.appendChild(labelp2);
   form.appendChild(p1NameInput);
   form.appendChild(p2NameInput);
-  form.appendChild(p1AgeInput);
-  form.appendChild(p2AgeInput);
   form.appendChild(submit);
 
   modalContainer.appendChild(form);
   modal.appendChild(modalContainer);
   modal.style.display = "block";
+
   body.appendChild(modal);
 
-  let p1Name = p1NameInput.value;
-  let p1Age = p1AgeInput.value;
-  let p2Name = p2NameInput.value;
-  let p2Age = p2AgeInput.value;
+  submit.addEventListener("click", function buildBoard(e) {
+    e.preventDefault();
+    let p1Name = p1NameInput.value;
+    let p2Name = p2NameInput.value;
 
-  getPlayer1(p1Name, p1Age);
-  // getPlayer2(p2Name, p2Age);
+    let playArea = document.querySelector(".playArea");
+
+    let p1Score = createElements("div", "", "score");
+    let p1h2 = createElements("h2", `${p1Name}: `, "p1Score");
+    let p1Span = createElements("span", 0, "p1ScoreNumber");
+
+    let p2Score = createElements("div", "", "score");
+    let p2h2 = createElements("h2", `${p2Name}: `, "p2Score");
+    let p2Span = createElements("span", 0, "p2ScoreNumber");
+    
+    let gameboard = createElements("div", "", "gameboard");
+
+    let i = 0;
+    do {
+      let position = createElements("div", "", "position");
+      switch (i) {
+        case 0:
+          position.classList.add("nw");
+          break;
+        case 1:
+          position.classList.add("n");
+          break;
+        case 2:
+          position.classList.add("ne");
+          break;
+        case 3:
+          position.classList.add("w");
+          break;
+        case 4:
+          position.classList.add("mid");
+          break;
+        case 5:
+          position.classList.add("e");
+          break;
+        case 6:
+          position.classList.add("sw");
+          break;
+        case 7:
+          position.classList.add("s");
+          break;
+        case 8:
+          position.classList.add("se");
+          break;
+
+        default:
+          break;
+      }
+      gameboard.appendChild(position);
+      i++;
+    } while (i < 9);
+
+    let modal = document.querySelector(".modal");
+    modal.style.display = "none";
+
+    p1Score.appendChild(p1h2);
+    p1h2.appendChild(p1Span);
+    p2Score.appendChild(p2h2);
+    playArea.appendChild(p1Score);
+    p2h2.appendChild(p2Span);
+    playArea.appendChild(p2Score);
+    playArea.appendChild(gameboard);
+  });
 }
+
+// buildBoard(e) {
+//   e.preventDefault();
+//   let body = document.querySelector("body");
+//   let playArea = createElements("div", "", "playArea");
+//   let score = createElements("div", "", "score");
+//   let h2 = createElements("h2", "", "");
+//   let gameboard = createElements("div", "", "gameboard");
+//   let position = createElements("div", "", "position");
+//   score.appendChild(h2);
+//   score.appendChild(h2);
+//   gameboard.appendChild(position);
+//   playArea.appendChild(gameboard);
+//   playArea.appendChild(score);
+//   playArea.appendChild(score);
+//   body.appendChild(playArea);
+// }
