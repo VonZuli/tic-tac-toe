@@ -1,20 +1,68 @@
 "use strict";
-// let game = {
-//   gameboard: ["❌", "⭕"],
 
-//   players: {
-//     p1: {
-//       name: p1Name,
-//     },
-//     p2: {
-//       name: p2Name,
-//     },
-//   },
+const Gameboard = (() => {
+  let buildGameboard = ["", "", "", "", "", "", "", "", ""];
 
-//   logic: {
-//     //game flow logic
-//   },
-// };
+  const render = (p1, p2) => {
+    let boardHTML = "";
+    let playArea = document.querySelector("#playArea");
+
+    let scoreContainer = createElements("div", "", "score-container");
+    let p1h2 = createElements("h2", `${p1}: `, "p1Score");
+    let p1Span = createElements("span", 0, "p1ScoreNumber");
+
+    let p2h2 = createElements("h2", `${p2}: `, "p2Score");
+    let p2Span = createElements("span", 0, "p2ScoreNumber");
+
+    let gameboard = createElements("div", "", "gameboard");
+    gameboard.id = "gameboard"
+
+    buildGameboard.forEach((square, index) => {
+      boardHTML += `<div class="square" id="square-${index}">${square}</div>`
+    });
+    
+    let modal = document.querySelector(".modal");
+    modal.style.display = "none";
+    
+    scoreContainer.appendChild(p1h2);
+    p1h2.appendChild(p1Span);
+    scoreContainer.appendChild(p2h2);
+    p2h2.appendChild(p2Span);
+    playArea.appendChild(scoreContainer);
+    playArea.appendChild(gameboard);
+    document.querySelector("#gameboard").innerHTML = boardHTML;
+  };
+  return {
+    render,
+  };
+})();
+
+const createPlayer = (name, marker) => {
+  return {
+    name,
+    marker,
+  };
+};
+
+const Game = (() => {
+  let players = [];
+  let currentPlayerIndex;
+  let gameOver;
+
+  const start = (p1, p2) => {
+    players = [
+      // createPlayer(document.querySelector("#player1").value, "❌"),
+      // createPlayer(document.querySelector("#player2").value, "⭕"),
+      createPlayer(document.querySelector('#p1Name').value, "❌"),
+      createPlayer(document.querySelector('#p2Name').value, "⭕"),
+    ];
+    currentPlayerIndex = 0;
+    gameOver = false;
+    Gameboard.render(p1, p2);
+  };
+  return {start };
+})();
+
 function createElements(el, content, className) {
   const element = document.createElement(el);
   element.textContent = content;
@@ -36,30 +84,32 @@ function start(e) {
   let labelp1 = createElements("label", "❌:", "p1Label");
   let p1NameInput = createElements("input", "", "p1NameInput");
   p1NameInput.id = "p1Name";
+  labelp1.setAttribute("for", "p1Name");
+  p1NameInput.setAttribute("placeholder", "Player 1 enter name");
+  p1NameInput.setAttribute("type", "text");
 
   let labelp2 = createElements("label", "⭕:", "p2Label");
   let p2NameInput = createElements("input", "", "p2NameInput");
   p2NameInput.id = "p2Name";
-
-  const submit = createElements("button", "Submit", "modalSubmitBtn");
-
-  labelp1.setAttribute("for", "p1Name");
-  p1NameInput.setAttribute("placeholder", "Player 1 Enter Name");
-
-  p1NameInput.setAttribute("type", "text");
-
   labelp2.setAttribute("for", "p2Name");
-  p2NameInput.setAttribute("placeholder", "Player 2 Enter Name");
-
+  p2NameInput.setAttribute("placeholder", "Player 2 enter name");
   p2NameInput.setAttribute("type", "text");
 
-  submit.setAttribute("type", "button");
+  const buildBoard = createElements("button", "Begin Game", "modalSubmitBtn");
+  buildBoard.setAttribute("type", "button");
+
+  buildBoard.addEventListener("click", (e) => {
+    let p1 = p1NameInput.value;
+    let p2 = p2NameInput.value;
+    e.preventDefault();
+    Game.start(p1 , p2);
+  });
 
   form.appendChild(labelp1);
-  form.appendChild(labelp2);
   form.appendChild(p1NameInput);
+  form.appendChild(labelp2);
   form.appendChild(p2NameInput);
-  form.appendChild(submit);
+  form.appendChild(buildBoard);
 
   modalContainer.appendChild(form);
   modal.appendChild(modalContainer);
@@ -67,75 +117,25 @@ function start(e) {
 
   body.appendChild(modal);
 
-  submit.addEventListener("click", function buildBoard(e) {
-    e.preventDefault();
-    let p1Name = p1NameInput.value;
-    let p2Name = p2NameInput.value;
 
-    let playArea = document.querySelector(".playArea");
-
-    let p1Score = createElements("div", "", "score");
-    let p1h2 = createElements("h2", `${p1Name}: `, "p1Score");
-    let p1Span = createElements("span", 0, "p1ScoreNumber");
-
-    let p2Score = createElements("div", "", "score");
-    let p2h2 = createElements("h2", `${p2Name}: `, "p2Score");
-    let p2Span = createElements("span", 0, "p2ScoreNumber");
-    
-    let gameboard = createElements("div", "", "gameboard");
-
-    let i = 0;
-    do {
-      let position = createElements("div", "", "position");
-      switch (i) {
-        case 0:
-          position.classList.add("nw");
-          break;
-        case 1:
-          position.classList.add("n");
-          break;
-        case 2:
-          position.classList.add("ne");
-          break;
-        case 3:
-          position.classList.add("w");
-          break;
-        case 4:
-          position.classList.add("mid");
-          break;
-        case 5:
-          position.classList.add("e");
-          break;
-        case 6:
-          position.classList.add("sw");
-          break;
-        case 7:
-          position.classList.add("s");
-          break;
-        case 8:
-          position.classList.add("se");
-          break;
-
-        default:
-          break;
-      }
-      gameboard.appendChild(position);
-      i++;
-    } while (i < 9);
-
-    let modal = document.querySelector(".modal");
-    modal.style.display = "none";
-
-    p1Score.appendChild(p1h2);
-    p1h2.appendChild(p1Span);
-    p2Score.appendChild(p2h2);
-    playArea.appendChild(p1Score);
-    p2h2.appendChild(p2Span);
-    playArea.appendChild(p2Score);
-    playArea.appendChild(gameboard);
-  });
+ 
 }
 
+// function gameOver() {
+//   let scoreContainer = document.querySelector(".score-container");
+//   let p1Name = document.querySelector(".p1Score").textContent;
+//   let p1Score = document.querySelector(".p1Score");
+//   let p2Name = document.querySelector(".p2Score").textContent;
+//   let p2Score = document.querySelector(".p2Score");
+
+//   //win
+//   p1Score.innerHTML = `${p1Name.split(":")[0]} wins!`;
+//   p2Score.innerHTML = `${p2Name.split(":")[0]} wins!`;
+
+//   //lose
+//   p1Score.style.textDecoration = "line-through red";
+//   p2Score.style.textDecoration = "line-through red";
+// }
 // buildBoard(e) {
 //   e.preventDefault();
 //   let body = document.querySelector("body");
