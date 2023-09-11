@@ -63,20 +63,23 @@ header > button {
   grid-column: span 2;
   justify-self: center;
   padding-bottom: 50px;
+  
 }
-.position {
+/* .position {
   border: 5px solid var(--font-color-light);
   font-size: 100px;
   min-width: 50px;
   min-height: 50px;
   font-size: 50px;
-}
+} */
 .square {
+  display: flex;
   border: 5px solid var(--font-color-light);
   font-size: 100px;
   min-width: 50px;
   min-height: 50px;
-  font-size: 50px;
+  align-items: center;
+  justify-content: center;
 }
 .inner-position {
   border: 2px solid var(--font-color-light);

@@ -1,5 +1,12 @@
 "use strict";
 
+function createElements(el, content, className) {
+  const element = document.createElement(el);
+  element.textContent = content;
+  element.className = className;
+  return element;
+}
+
 const Gameboard = (() => {
   let buildGameboard = ["", "", "", "", "", "", "", "", ""];
 
@@ -15,25 +22,56 @@ const Gameboard = (() => {
     let p2Span = createElements("span", 0, "p2ScoreNumber");
 
     let gameboard = createElements("div", "", "gameboard");
-    gameboard.id = "gameboard"
+    gameboard.id = "gameboard";
 
     buildGameboard.forEach((square, index) => {
-      boardHTML += `<div class="square" id="square-${index}">${square}</div>`
+      boardHTML += `<div class="square" id="square-${index}">${square}</div>`;
+      
     });
-    
+
     let modal = document.querySelector(".modal");
     modal.style.display = "none";
-    
+
     scoreContainer.appendChild(p1h2);
     p1h2.appendChild(p1Span);
     scoreContainer.appendChild(p2h2);
     p2h2.appendChild(p2Span);
     playArea.appendChild(scoreContainer);
     playArea.appendChild(gameboard);
+    
     document.querySelector("#gameboard").innerHTML = boardHTML;
+    const squares = document.querySelectorAll(".square");
+    console.log(squares)
+    squares.forEach((square) => {
+      square.addEventListener("click", Game.handleClick);
+    });
   };
+
+  const update = (index, value) => {
+    buildGameboard[index] = value;
+    renderBoard();
+  };
+
+  //create accessor method
+
+  const renderBoard = () =>{
+    let boardHTML = "";
+    buildGameboard.forEach((square, index) => {
+      console.log(square, index);
+      boardHTML += `<div class="square" id="square-${index}">${square}</div>`;
+      
+    });
+    document.querySelector("#gameboard").innerHTML = boardHTML;
+    const squares = document.querySelectorAll(".square");
+    squares.forEach((square) => {
+      square.addEventListener("click", Game.handleClick);
+    });
+  }
+
   return {
     render,
+    renderBoard,
+    update,
   };
 })();
 
@@ -51,24 +89,25 @@ const Game = (() => {
 
   const start = (p1, p2) => {
     players = [
-      // createPlayer(document.querySelector("#player1").value, "❌"),
-      // createPlayer(document.querySelector("#player2").value, "⭕"),
-      createPlayer(document.querySelector('#p1Name').value, "❌"),
-      createPlayer(document.querySelector('#p2Name').value, "⭕"),
+      createPlayer(document.querySelector("#p1Name").value, "❌"),
+      createPlayer(document.querySelector("#p2Name").value, "⭕"),
     ];
     currentPlayerIndex = 0;
     gameOver = false;
     Gameboard.render(p1, p2);
+    const squares = document.querySelectorAll(".square");
+    squares.forEach((square) => {
+      square.addEventListener("click", Game.handleClick);
+    });
   };
-  return {start };
+  const handleClick = (e) => {
+    let index = parseInt(e.target.id.split("-")[1]);
+    console.log(index);
+    Gameboard.update(index, players[currentPlayerIndex].marker);
+    currentPlayerIndex = currentPlayerIndex === 0 ? 1 : 0;
+  };
+  return { start, handleClick };
 })();
-
-function createElements(el, content, className) {
-  const element = document.createElement(el);
-  element.textContent = content;
-  element.className = className;
-  return element;
-}
 
 let startGame = document.querySelector(".startGame");
 startGame.addEventListener("click", start);
@@ -102,7 +141,7 @@ function start(e) {
     let p1 = p1NameInput.value;
     let p2 = p2NameInput.value;
     e.preventDefault();
-    Game.start(p1 , p2);
+    Game.start(p1, p2);
   });
 
   form.appendChild(labelp1);
@@ -116,9 +155,6 @@ function start(e) {
   modal.style.display = "block";
 
   body.appendChild(modal);
-
-
- 
 }
 
 // function gameOver() {
