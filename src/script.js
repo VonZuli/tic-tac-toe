@@ -26,7 +26,6 @@ const Gameboard = (() => {
 
     buildGameboard.forEach((square, index) => {
       boardHTML += `<div class="square" id="square-${index}">${square}</div>`;
-      
     });
 
     let modal = document.querySelector(".modal");
@@ -38,10 +37,9 @@ const Gameboard = (() => {
     p2h2.appendChild(p2Span);
     playArea.appendChild(scoreContainer);
     playArea.appendChild(gameboard);
-    
+
     document.querySelector("#gameboard").innerHTML = boardHTML;
     const squares = document.querySelectorAll(".square");
-    console.log(squares)
     squares.forEach((square) => {
       square.addEventListener("click", Game.handleClick);
     });
@@ -53,25 +51,25 @@ const Gameboard = (() => {
   };
 
   //create accessor method
+  const getGameboard = () => buildGameboard;
 
-  const renderBoard = () =>{
+  const renderBoard = () => {
     let boardHTML = "";
     buildGameboard.forEach((square, index) => {
-      console.log(square, index);
       boardHTML += `<div class="square" id="square-${index}">${square}</div>`;
-      
     });
     document.querySelector("#gameboard").innerHTML = boardHTML;
     const squares = document.querySelectorAll(".square");
     squares.forEach((square) => {
       square.addEventListener("click", Game.handleClick);
     });
-  }
+  };
 
   return {
     render,
     renderBoard,
     update,
+    getGameboard,
   };
 })();
 
@@ -100,21 +98,91 @@ const Game = (() => {
       square.addEventListener("click", Game.handleClick);
     });
   };
+
   const handleClick = (e) => {
     let index = parseInt(e.target.id.split("-")[1]);
-    console.log(index);
+
+    if (Gameboard.getGameboard()[index] != "") return;
+
     Gameboard.update(index, players[currentPlayerIndex].marker);
+
+    if (checkForWin(Gameboard.getGameboard(), players[currentPlayerIndex].marker)) {
+      gameOver = true;
+
+      const declareWinner = () => {
+        // let scoreContainer = document.querySelector(".score-container");
+        let p1Name = document.querySelector(".p1Score").textContent;
+        let p1Score = document.querySelector(".p1Score");
+        let p2Name = document.querySelector(".p2Score").textContent;
+        let p2Score = document.querySelector(".p2Score");
+
+        if (players[currentPlayerIndex] === 0) {
+          p1Score.innerHTML = `${p1Name.split(":")[0]} wins!`;
+          p2Score.style.textDecoration = "line-through red";
+        } else if(players[currentPlayerIndex]===1){
+          p2Score.innerHTML = `${p2Name.split(":")[0]} wins!`;
+          p1Score.style.textDecoration = "line-through red";
+        }
+      }
+      declareWinner();
+      // scoreContainer.textContent = `${players[currentPlayerIndex].name} won!`;
+      // console.log(`${players[currentPlayerIndex].name} won!`);
+    } else if(checkForTie(Gameboard.getGameboard())){
+      gameOver = true;
+      console.log("tie game")
+    }
     currentPlayerIndex = currentPlayerIndex === 0 ? 1 : 0;
   };
-  return { start, handleClick };
+
+  const restart = () => {
+    for (let i = 0; i < 9; i++) {
+      Gameboard.update(i, "");
+    }
+    let startGame = document.querySelector("#startBtn");
+    startGame.removeAttribute("disabled");
+    startGame.style.filter = "grayscale(0%)";
+    Gameboard.renderBoard();
+  };
+
+  return { start, restart, handleClick };
 })();
 
-let startGame = document.querySelector(".startGame");
+function checkForTie(board) {
+  return board.every(cell => cell !=="")
+}
+
+function checkForWin(board) {
+  const winningCombos = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6],
+  ];
+  for (let i = 0; i < winningCombos.length; i++) {
+    const [a, b, c] = winningCombos[i];
+    if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+      return true;
+    }
+  }
+  return false;
+}
+
+let startGame = document.querySelector("#startBtn");
 startGame.addEventListener("click", start);
+
+let restartGame = document.querySelector("#resetBtn");
+restartGame.addEventListener("click", () => {
+  Game.restart();
+});
 
 function start(e) {
   e.preventDefault();
   startGame.setAttribute("disabled", true);
+  startGame.style.filter = "grayscale(100%)";
   let body = document.querySelector("body");
   let modal = createElements("div", "", "modal");
   let modalContainer = createElements("div", "", "modal-container");
@@ -156,35 +224,3 @@ function start(e) {
 
   body.appendChild(modal);
 }
-
-// function gameOver() {
-//   let scoreContainer = document.querySelector(".score-container");
-//   let p1Name = document.querySelector(".p1Score").textContent;
-//   let p1Score = document.querySelector(".p1Score");
-//   let p2Name = document.querySelector(".p2Score").textContent;
-//   let p2Score = document.querySelector(".p2Score");
-
-//   //win
-//   p1Score.innerHTML = `${p1Name.split(":")[0]} wins!`;
-//   p2Score.innerHTML = `${p2Name.split(":")[0]} wins!`;
-
-//   //lose
-//   p1Score.style.textDecoration = "line-through red";
-//   p2Score.style.textDecoration = "line-through red";
-// }
-// buildBoard(e) {
-//   e.preventDefault();
-//   let body = document.querySelector("body");
-//   let playArea = createElements("div", "", "playArea");
-//   let score = createElements("div", "", "score");
-//   let h2 = createElements("h2", "", "");
-//   let gameboard = createElements("div", "", "gameboard");
-//   let position = createElements("div", "", "position");
-//   score.appendChild(h2);
-//   score.appendChild(h2);
-//   gameboard.appendChild(position);
-//   playArea.appendChild(gameboard);
-//   playArea.appendChild(score);
-//   playArea.appendChild(score);
-//   body.appendChild(playArea);
-// }

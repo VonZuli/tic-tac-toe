@@ -63,7 +63,6 @@ header > button {
   grid-column: span 2;
   justify-self: center;
   padding-bottom: 50px;
-  
 }
 /* .position {
   border: 5px solid var(--font-color-light);
@@ -81,6 +80,9 @@ header > button {
   align-items: center;
   justify-content: center;
 }
+/* .square:hover {
+  content: "❌";
+} */
 .inner-position {
   border: 2px solid var(--font-color-light);
 }
