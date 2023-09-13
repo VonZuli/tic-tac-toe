@@ -10,6 +10,7 @@
   --play-area: hsl(209, 26%, 34%);
   --font-color-light: hsl(0, 100%, 100%);
   --font-color-light-alpha: hsl(0, 100%, 100%, 0.4);
+  --marker-color: hsl(9, 87%, 54%);
   font-family: Arial, Helvetica, sans-serif;
 }
 body {
@@ -35,16 +36,13 @@ header > button {
   padding: 20px;
   font-size: 30px;
 }
-.score-container {
-  display: grid;
-  gap: 20px;
-  padding: 8px 2px 8px 2px;
+.message-container {
+  padding: 10px;
   font-size: 15px;
-  /* border: 2px solid white; */
-  grid-template: 1fr / repeat(2, 1fr);
-  align-items: center;
-  justify-items: center;
-  font-size: 25px;
+  margin: 0 auto;
+  font-size: 35px;
+  font-weight: 700;
+  border: 10px solid var(--marker-color);
 }
 .playArea {
   background-color: var(--play-area);
@@ -52,6 +50,7 @@ header > button {
   margin: 0 auto;
   justify-content: center;
   grid-template: 0.1fr 1fr/ 1fr;
+  gap: 20px;
 }
 
 .gameboard {
@@ -62,7 +61,7 @@ header > button {
   height: 600px;
   grid-column: span 2;
   justify-self: center;
-  padding-bottom: 50px;
+  padding: 50px 0;
 }
 /* .position {
   border: 5px solid var(--font-color-light);
