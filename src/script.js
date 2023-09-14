@@ -6,20 +6,6 @@ function createElements(el, content, className) {
   element.className = className;
   return element;
 }
-// const declareWinner = (() => {
-//   let scoreContainer = document.querySelector(".message-container");
-
-//   if (players[currentPlayerIndex] === 0) {
-//     p1Score.textContent = `${players[currentPlayerIndex].name} wins!`;
-//     p2Score.style.textDecoration = "line-through red";
-//   } else if (players[currentPlayerIndex] === 1) {
-//     p2Score.textContent = `${players[currentPlayerIndex].name} wins!`;
-//     p1Score.style.textDecoration = "line-through red";
-//   } else if (checkForTie(Gameboard.getGameboard())) {
-//     gameOver = true;
-//     scoreContainer.innerHTML = `Draw`;
-//   }
-// })();
 
 const displayController = (() => {
   const renderMessage = (message) => {
@@ -31,7 +17,7 @@ const displayController = (() => {
 const Gameboard = (() => {
   let buildGameboard = ["", "", "", "", "", "", "", "", ""];
 
-  const render = (p1, p2) => {
+  const render = () => {
     let boardHTML = "";
     let playArea = document.querySelector("#playArea");
 
@@ -47,7 +33,9 @@ const Gameboard = (() => {
     let modal = document.querySelector(".modal");
     modal.style.display = "none";
 
-    messageContainer.style.display = "none"
+    messageContainer.style.display = "none";
+
+    playArea.style.display = "grid";
     playArea.appendChild(messageContainer);
     playArea.appendChild(gameboard);
 
@@ -58,17 +46,18 @@ const Gameboard = (() => {
     });
   };
 
+  // render an updated gameboard state after each move
   const update = (index, value) => {
     buildGameboard[index] = value;
-    renderBoard();
+    renderBoardReset();
   };
-
-  //create accessor method
+  // exposes the board array but does not allow direct access
   const getGameboard = () => buildGameboard;
 
-  const renderBoard = () => {
+  // render a fresh gameboard without creating a new playArea div
+  const renderBoardReset = () => {
     let boardHTML = "";
-    document.querySelector('.message-container').style.display = "none"
+    document.querySelector(".message-container").style.display = "none";
     buildGameboard.forEach((square, index) => {
       boardHTML += `<div class="square" id="square-${index}">${square}</div>`;
     });
@@ -81,12 +70,13 @@ const Gameboard = (() => {
 
   return {
     render,
-    renderBoard,
+    renderBoardReset,
     update,
     getGameboard,
   };
 })();
 
+// creates as many players as needed by using function factory
 const createPlayer = (name, marker, score) => {
   return {
     name,
@@ -100,6 +90,7 @@ const Game = (() => {
   let currentPlayerIndex;
   let gameOver;
 
+  // starts the game by getting user submitted info from modal form
   const start = () => {
     players = [
       createPlayer(document.querySelector("#p1Name").value, "❌", 0),
@@ -114,6 +105,7 @@ const Game = (() => {
     });
   };
 
+  // handles user click events and checks for gameOver state after each event
   const handleClick = (e) => {
     let index = parseInt(e.target.id.split("-")[1]);
 
@@ -123,38 +115,39 @@ const Game = (() => {
 
     if (checkForWin(Gameboard.getGameboard(), players[currentPlayerIndex].marker)) {
       gameOver = true;
-      gameOver === true ? players[currentPlayerIndex].score++ : console.log(players);
-      document.querySelector('.message-container').style.display = "block"
+      document.querySelector(".message-container").style.display = "block";
       displayController.renderMessage(`${players[currentPlayerIndex].name} wins!`);
-
     } else if (checkForTie(Gameboard.getGameboard())) {
       gameOver = true;
-      displayController.renderMessage(`Draw!`);
+      document.querySelector(".message-container").style.display = "block";
+      displayController.renderMessage("Draw!");
     }
     currentPlayerIndex = currentPlayerIndex === 0 ? 1 : 0;
   };
 
+  // restarts the game
   const restart = () => {
     for (let i = 0; i < 9; i++) {
       Gameboard.update(i, "");
     }
+    currentPlayerIndex = 0;
     let startGame = document.querySelector("#startBtn");
     startGame.removeAttribute("disabled");
     startGame.style.filter = "grayscale(0%)";
-    Gameboard.renderBoard();
+    Gameboard.renderBoardReset();
     gameOver = false;
     document.querySelector(".message-container").style.display = "none";
-    // document.querySelector(".p1ScoreNumber").innerHTML++
-    // document.querySelector(".p2ScoreNumber").innerHTML++
   };
 
   return { start, restart, handleClick };
 })();
 
+// checks to see if every cell is filled
 function checkForTie(board) {
   return board.every((cell) => cell !== "");
 }
 
+// compares winning combinations to the board state
 function checkForWin(board) {
   const winningCombos = [
     [0, 1, 2],
@@ -183,6 +176,7 @@ restartGame.addEventListener("click", () => {
   Game.restart();
 });
 
+// render the modal and modal form on button click press
 function start(e) {
   e.preventDefault();
   startGame.setAttribute("disabled", true);
@@ -210,8 +204,6 @@ function start(e) {
   buildBoard.setAttribute("type", "button");
 
   buildBoard.addEventListener("click", (e) => {
-    // let p1 = p1NameInput.value;
-    // let p2 = p2NameInput.value;
     e.preventDefault();
     Game.start();
     modal.style.display = "none";
