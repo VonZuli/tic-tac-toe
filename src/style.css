@@ -23,7 +23,8 @@ header {
   margin-top: 20px;
 }
 header > button {
-  width: 5rem;
+  width: fit-content;
+  min-width: 120px;
   height: 3rem;
   justify-self: center;
   align-self: center;
@@ -31,6 +32,7 @@ header > button {
   border: none;
   border-radius: 50px;
   font-weight: 700;
+  padding: 5px;
 }
 .title {
   text-align: center;
